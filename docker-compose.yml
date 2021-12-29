@@ -1,0 +1,41 @@
+version: "3"
+services:
+  redis:
+    image: redislabs/redismod:edge
+    container_name: redis
+    hostname: redis
+    entrypoint: ["redis-server", "--appendonly", "yes", "--loadmodule", "/usr/lib/redis/modules/rejson.so", "--loadmodule", "/usr/lib/redis/modules/redisearch.so"]
+    command: --port 6379 --requirepass ${REDIS_PASS}
+    restart: always
+    ports:
+      - ${REDIS_PORT}:6379
+    volumes:
+      - redis_data:/data:rw
+    networks:
+      - backend-network
+
+  backend:
+    build: ./
+    container_name: backend
+    hostname: backend
+    environment:
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PASS: ${REDIS_PASS}
+      REDIS_PORT: ${REDIS_PORT}
+    restart: unless-stopped
+    command: uvicorn app.main:app --reload --workers 3 --host 0.0.0.0 --port 80
+    ports:
+      - 80:80
+    depends_on:
+      - redis
+    networks:
+      - backend-network
+    volumes:
+      - ./app/:/service/app/
+
+networks:
+  backend-network:
+    driver: bridge
+
+volumes:
+  redis_data: null
