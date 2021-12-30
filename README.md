@@ -21,10 +21,6 @@ This repo walks you through a simple demo on how to handle FastAPI with Redis se
 
 - **[Redis OM](https://github.com/redis/redis-om-python)** to models and stores the data at Redis server
 
-- **[TaskTiger](https://github.com/closeio/tasktiger)** for run the tasks asynchronously in Redis queue
-
-- **[Pub/Sub](https://redis.io/topics/pubsub)** messaging with remote machine via Redis Topic
-
 ## Quick-Start
 
 First, set environment variables for Redis Server in the `.env` file as a below:
