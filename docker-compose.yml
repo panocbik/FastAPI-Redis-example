@@ -15,9 +15,13 @@ services:
       - backend-network
 
   backend:
-    build: ./
+    build: 
+      context: .
+      dockerfile: backend.dockerfile
     container_name: backend
     hostname: backend
+    env_file:
+      - .env
     environment:
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PASS: ${REDIS_PASS}

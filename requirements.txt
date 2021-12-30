@@ -2,3 +2,6 @@ fastapi
 uvicorn
 pydantic
 redis-om
+python-jose[cryptography]
+passlib
+python-multipart

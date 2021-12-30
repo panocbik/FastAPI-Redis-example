@@ -1,21 +1,21 @@
-from typing import List, Optional
+from typing import List, Optional, Any
 
 from fastapi import (
     APIRouter,
     Response,
     HTTPException, 
-    status
+    status,
+    Depends
 )
 from redis_om import NotFoundError
 
 import app.api.errors.string as string
+from app.api import deps
 from app.models.task import Task, PostTask
+from app.models.user import User
 
 
-router = APIRouter(
-    prefix="/tasks",
-    tags=["Task"],
-)
+router = APIRouter()
 
 
 @router.get(
@@ -24,7 +24,10 @@ router = APIRouter(
     summary='Informaion about all Tasks',
     response_model= List[Task]
 )
-async def tasks(name: Optional[str] = None):
+async def tasks(
+    name: Optional[str] = None,
+    current_user: User = Depends(deps.get_current_user)
+) -> Any:
     if name is None:
         return Task.find().all()
     return Task.find(Task.name==name).all()
@@ -36,7 +39,7 @@ async def tasks(name: Optional[str] = None):
     summary='Create new Task',
     response_model= Task
 )
-async def create(task: PostTask) -> List[Task]:
+async def create(task: PostTask) -> Any:
     task_redis = Task(name=task.name, description=task.description)
     return task_redis.save()
 
@@ -47,7 +50,7 @@ async def create(task: PostTask) -> List[Task]:
     summary='Informaion about a specific Task',
     response_model= Task
 )
-async def task(pk: str) -> Task:
+async def task(pk: str) -> Any:
     try:
         task = Task.get(pk)
     except NotFoundError:
@@ -64,7 +67,7 @@ async def task(pk: str) -> Task:
     summary='Informaion about a specific Task',
     response_model= Task
 )
-async def update(pk: str) -> Task:
+async def update(pk: str) -> Any:
     try:
         task = Task.get(pk)
     except NotFoundError:
@@ -81,7 +84,7 @@ async def update(pk: str) -> Task:
     status_code= status.HTTP_204_NO_CONTENT,
     summary='Delete a Task'
 )
-async def delete(pk: str) -> None:
+async def delete(pk: str) -> Any:
     try:
         Task.get(pk).delete()
     except NotFoundError:

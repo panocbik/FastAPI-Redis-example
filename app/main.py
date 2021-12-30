@@ -1,12 +1,11 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from app.api.routes import task
-from app.core.config import get_app_settings
+from app.api.api import api_router
+from app.core.config import settings
 from app.core.events import create_start_app_handler
 
 def get_application() -> FastAPI:
-    settings = get_app_settings()
 
     application = FastAPI(**settings.fastapi_kwargs)
 
@@ -23,7 +22,7 @@ def get_application() -> FastAPI:
         allow_headers=["*"],
     )
 
-    application.include_router(task.router)
+    application.include_router(api_router, prefix=settings.API_V1_STR)
 
     return application
 

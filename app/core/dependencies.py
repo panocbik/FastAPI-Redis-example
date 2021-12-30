@@ -1,12 +1,10 @@
 from redis.client import Redis
 from redis_om import get_redis_connection
 
-from app.core.config import get_app_settings
-from app.core.settings.app import AppSettings
+from app.core.config import settings
 
-def connect_to_db(
-    settings: AppSettings = get_app_settings()
-) -> Redis:
+
+def connect_to_db() -> Redis:
     return get_redis_connection(
         host=settings.redis_host,
         port=settings.redis_port,
